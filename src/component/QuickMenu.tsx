@@ -14,7 +14,7 @@ export default function QuickMenu({isActive,setIsActive,isOpen,setIsOpen}:{isOpe
         aria-controls="floating-panel"
         aria-expanded={!!isActive}
         aria-haspopup='true'
-          className={`flex z-40 flex-row-reverse items-center fixed right-[34px] bottom-[27px] rounded-full ${
+          className={`flex z-40 flex-row-reverse items-center absolute right-[34px] bottom-[27px] rounded-full ${
             isActive
               ? "overflow-visible gap-[16px] !right-[49px]"
               : "overflow-hidden gap-[26px]"
@@ -73,10 +73,10 @@ export default function QuickMenu({isActive,setIsActive,isOpen,setIsOpen}:{isOpe
             )}
             {!isActive && (
               <motion.button
-                initial={{ opacity: 0, x: 180, rotate: 360 }}
-                animate={{ opacity: 1, x: 0, rotate: 0 }}
-                exit={{ opacity: 0, x: 360, rotate: 360 }}
-                transition={{ delay: 0.2, type: "spring", damping: 20 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ delay: 0.2 }}
                 type="button"
                 onClick={() => {
                   setIsOpen((prev) => !prev);

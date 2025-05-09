@@ -1,3 +1,4 @@
+import {motion} from "framer-motion"
 function LinkIcon(){
     return (<svg width="26" height="13" viewBox="0 0 26 13" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path fillRule="evenodd" clipRule="evenodd" d="M11.3508 10.0585H6.32158C4.24702 10.0585 2.54965 8.36111 2.54965 6.28655C2.54965 4.21199 4.24702 2.51462 6.32158 2.51462H11.3508V0H6.32158C2.85141 0 0.0350342 2.81637 0.0350342 6.28655C0.0350342 9.75673 2.85141 12.5731 6.32158 12.5731H11.3508V10.0585ZM18.8947 2.78406e-05H13.8654V2.51465H18.8947C20.9692 2.51465 22.6666 4.21202 22.6666 6.28658C22.6666 8.36114 20.9692 10.0585 18.8947 10.0585H13.8654V12.5731H18.8947C22.3649 12.5731 25.1812 9.75675 25.1812 6.28658C25.1812 2.8164 22.3649 2.78406e-05 18.8947 2.78406e-05ZM17.6374 5.02924H7.57895V7.54386H17.6374V5.02924Z" fill="#2F80ED"/>
@@ -192,4 +193,70 @@ function QuicksButton(){
 
     )
 }
-export {SearchIconGray,QuicksButton,LinkIcon, SuitcaseIcon, ClockIcon, UserBlueIcon, DocOpen, MenuHamburgerIcon, PenIcon, StarIcon, BookmarkIcon,MenuIcon, MenuOpenIcon, ArrowLeftIcon, ArrowDownIcon, BlankCheckboxIcon, CheckboxIcon, PlusIcon, SearchIcon, UserIcon, TaskActiveIcon, TaskIcon, InboxActiveIcon, InboxIcon, CloseIcon}
+function UserGrayIcon(){
+    return(
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M9 3C7.3425 3 6 4.3425 6 6C6 7.6575 7.3425 9 9 9C10.6575 9 12 7.6575 12 6C12 4.3425 10.6575 3 9 3ZM10.5 6C10.5 5.175 9.825 4.5 9 4.5C8.175 4.5 7.5 5.175 7.5 6C7.5 6.825 8.175 7.5 9 7.5C9.825 7.5 10.5 6.825 10.5 6ZM13.5 13.5C13.35 12.9675 11.025 12 9 12C6.9825 12 4.6725 12.96 4.5 13.5H13.5ZM3 13.5C3 11.505 6.9975 10.5 9 10.5C11.0025 10.5 15 11.505 15 13.5V15H3V13.5Z" fill="black" fill-opacity="0.54"/>
+</svg>
+    )
+}
+const LoadingIcon = () => {
+    return (
+      <motion.div
+        className="rounded-full flex items-center justify-center"
+        animate={{ rotate: 360 }}
+        transition={{ repeat: Infinity, duration: 1 }}
+      >
+        <svg
+          width="86"
+          height="86"
+          viewBox="0 0 86 86"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M17.8009 60.5045L67.6057 24.9025L67.6796 25.0058C67.6551 24.9713 67.6306 24.9369 67.606 24.9025C57.7747 11.1492 38.6557 7.96983 24.9024 17.8011C11.1492 27.6323 7.96978 46.7513 17.8009 60.5045Z"
+            fill="#C4C4C4"
+          />
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M67.6058 24.9025L17.8009 60.5047L17.7771 60.4715C17.785 60.4826 17.7929 60.4936 17.8008 60.5047C27.6321 74.2579 46.7511 77.4373 60.5044 67.6061C74.2577 57.7748 77.4371 38.6557 67.6058 24.9025Z"
+            fill="#F8F8F8"
+          />
+          <path
+            d="M26.3985 59.0807C26.3985 61.4391 24.4866 63.351 22.1282 63.351C19.7697 63.351 17.8578 61.4391 17.8578 59.0807C17.8578 56.7222 19.7697 54.8103 22.1282 54.8103C24.4866 54.8103 26.3985 56.7222 26.3985 59.0807Z"
+            fill="#C4C4C4"
+          />
+          <path
+            d="M68.3256 27.2472C68.3256 29.6056 66.4137 31.5175 64.0553 31.5175C61.6968 31.5175 59.7849 29.6056 59.7849 27.2472C59.7849 24.8887 61.6968 22.9768 64.0553 22.9768C66.4137 22.9768 68.3256 24.8887 68.3256 27.2472Z"
+            fill="#C4C4C4"
+          />
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M24.1859 55.9403C31.4963 66.1671 45.7131 68.5313 55.9399 61.2208C66.1666 53.9104 68.5308 39.6937 61.2204 29.4669C53.9099 19.2401 39.6932 16.8759 29.4664 24.1864C19.2396 31.4968 16.8755 45.7135 24.1859 55.9403Z"
+            fill="white"
+          />
+        </svg>
+      </motion.div>
+    );
+  };
+  function ArrowLeftGrayIcon(){
+    return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M20 11H7.83L13.42 5.41L12 4L4 12L12 20L13.41 18.59L7.83 13H20V11Z" fill="#333333"/>
+</svg>
+    )
+  }
+  function CloseGrayIcon(){
+    return (
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z" fill="#333333"/>
+</svg>
+
+    )
+  }
+export {CloseGrayIcon,ArrowLeftGrayIcon,LoadingIcon,UserGrayIcon,SearchIconGray,QuicksButton,LinkIcon, SuitcaseIcon, ClockIcon, UserBlueIcon, DocOpen, MenuHamburgerIcon, PenIcon, StarIcon, BookmarkIcon,MenuIcon, MenuOpenIcon, ArrowLeftIcon, ArrowDownIcon, BlankCheckboxIcon, CheckboxIcon, PlusIcon, SearchIcon, UserIcon, TaskActiveIcon, TaskIcon, InboxActiveIcon, InboxIcon, CloseIcon}
