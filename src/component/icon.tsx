@@ -256,7 +256,21 @@ const LoadingIcon = () => {
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z" fill="#333333"/>
 </svg>
+    )
+  }
+  function NavigationMenuChat(){
+    return (
+        <svg width="12" height="4" viewBox="0 0 12 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M2.00033 0.666656C1.26699 0.666656 0.666992 1.26666 0.666992 1.99999C0.666992 2.73332 1.26699 3.33332 2.00033 3.33332C2.73366 3.33332 3.33366 2.73332 3.33366 1.99999C3.33366 1.26666 2.73366 0.666656 2.00033 0.666656ZM10.0003 0.666656C9.26699 0.666656 8.66699 1.26666 8.66699 1.99999C8.66699 2.73332 9.26699 3.33332 10.0003 3.33332C10.7337 3.33332 11.3337 2.73332 11.3337 1.99999C11.3337 1.26666 10.7337 0.666656 10.0003 0.666656ZM4.66699 1.99999C4.66699 1.26666 5.26699 0.666656 6.00033 0.666656C6.73366 0.666656 7.33366 1.26666 7.33366 1.99999C7.33366 2.73332 6.73366 3.33332 6.00033 3.33332C5.26699 3.33332 4.66699 2.73332 4.66699 1.99999Z" fill="#4F4F4F"/>
+</svg>
+    )
+  }
+  function ArrowHeadDownIcon(){
+    return (
+        <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M14.5981 6.91248L10.7731 10.7291L6.94807 6.91248L5.77307 8.08748L10.7731 13.0875L15.7731 8.08748L14.5981 6.91248Z" fill="#4F4F4F"/>
+</svg>
 
     )
   }
-export {CloseGrayIcon,ArrowLeftGrayIcon,LoadingIcon,UserGrayIcon,SearchIconGray,QuicksButton,LinkIcon, SuitcaseIcon, ClockIcon, UserBlueIcon, DocOpen, MenuHamburgerIcon, PenIcon, StarIcon, BookmarkIcon,MenuIcon, MenuOpenIcon, ArrowLeftIcon, ArrowDownIcon, BlankCheckboxIcon, CheckboxIcon, PlusIcon, SearchIcon, UserIcon, TaskActiveIcon, TaskIcon, InboxActiveIcon, InboxIcon, CloseIcon}
+export {ArrowHeadDownIcon,NavigationMenuChat,CloseGrayIcon,ArrowLeftGrayIcon,LoadingIcon,UserGrayIcon,SearchIconGray,QuicksButton,LinkIcon, SuitcaseIcon, ClockIcon, UserBlueIcon, DocOpen, MenuHamburgerIcon, PenIcon, StarIcon, BookmarkIcon,MenuIcon, MenuOpenIcon, ArrowLeftIcon, ArrowDownIcon, BlankCheckboxIcon, CheckboxIcon, PlusIcon, SearchIcon, UserIcon, TaskActiveIcon, TaskIcon, InboxActiveIcon, InboxIcon, CloseIcon}

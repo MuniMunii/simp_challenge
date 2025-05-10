@@ -27,6 +27,20 @@
   --color-sticker-6:#cfcef9;
   --color-sticker-7:#f9e0fd;
 }
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #BDBDBD transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: gray;
+  border-radius: 8px;
+}
 html{
   font-family:"Lato", sans-serif !important;
   color: #333333 !important;

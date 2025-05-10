@@ -4,16 +4,7 @@ import QuickMenu from "./component/QuickMenu";
 import { SearchIcon } from "./component/icon";
 import InboxComp from "./component/InboxComp";
 import { AnimatePresence, motion } from "framer-motion";
-interface HistoryProps{
-  name:string,
-  chat:string,
-  date:string
-}
-interface DummyTextProps{
-  type:string,
-  namaGroup:string,
-  history:HistoryProps[]
-}
+import TaskMainComp from "./component/taskMainComp";
 function App() {
   const [isActive, setIsActive] = useState<"inbox" | "task" | null>(null);
   const [loadingEffect, setLoadingEffect] = useState<boolean>(true);
@@ -48,7 +39,7 @@ function App() {
             className="absolute bottom-[110px] right-[34px]  w-[734px] h-[737px] rounded-[5px] bg-white flex flex-col"
           >
             {isActive === "inbox" ? <InboxComp isActive={isActive} loadingEffect={loadingEffect}/> : (
-              "this Task"
+              <TaskMainComp/>
             )}
           </motion.div>
           )}
