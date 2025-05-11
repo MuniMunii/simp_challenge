@@ -193,7 +193,7 @@ export default function ChatComp({
                       >
                         {key.name}
                       </p>
-                      <div className={`flex min-w-[300px] relative gap-[7px] ${key.name==='You'?'flex-row':'flex-row-reverse justify-between'}`}>
+                      <div className={`flex min-w-[300px] relative gap-[7px] justify-between ${key.name==='You'?'flex-row':'flex-row-reverse'}`}>
                         <ChatMenu/>
                       <div
                         className={`p-2.5 text-left w-fit rounded-[5px] mb-1 text-primary-darkGray ${
