@@ -1,89 +1,151 @@
 import {
-  ArrowDownIcon,
   ArrowHeadDownIcon,
   BookmarkActiveIcon,
   BookmarkIcon,
   CalenderIcon,
-  MenuIcon,
   NavigationMenuChat,
   PenActiveIcon,
   PenIcon,
   TimeActiveIcon,
   TimeIcon,
 } from "./icon";
-import { useState,forwardRef, useEffect } from "react";
-import TextareaAutosize from 'react-textarea-autosize';
+import { useState, useEffect, useRef } from "react";
+import TextareaAutosize from "react-textarea-autosize";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import "../calender.css"
-import { registerLocale,setDefaultLocale } from "react-datepicker";
-import {enGB} from 'date-fns/locale/en-GB';
-const customLocale={
-    ...enGB,
-    localize:{
-        ...enGB.localize,
-        day:(day:number)=>{
-            const dayName=['M','T',"W","Th",'F','S','S']
-            return dayName[day]
-        }
-    }
-}
-registerLocale('custom',customLocale)
-setDefaultLocale('custom')
+import "../calender.css";
+import { registerLocale, setDefaultLocale } from "react-datepicker";
+import { enGB } from "date-fns/locale/en-GB";
+import BookmarkDropdown from "./bookmarkDropdown";
+const customLocale = {
+  ...enGB,
+  localize: {
+    ...enGB.localize,
+    day: (day: number) => {
+      const dayName = ["M", "T", "W", "Th", "F", "S", "S"];
+      return dayName[day];
+    },
+  },
+};
+registerLocale("custom", customLocale);
+setDefaultLocale("custom");
 export default function TaskComp({
+  toggleHide,
+  hideTask,
   updateTask,
+  deleteTask,
   nameTask,
   endDate,
   date,
   task,
   checked,
-  index,
-  label
+  label,
 }: {
+  toggleHide:()=>void;
+  hideTask:boolean;
   index: number;
-  updateTask: (index: number, updates: Partial<TaskProps>) => void;
+  updateTask: (updates: Partial<TaskProps>) => void;
+  deleteTask:()=>void;
   nameTask: string;
   endDate: string;
   date: string;
   task: string;
   checked: boolean;
-  label:LabelProps[]|undefined
+  label: LabelProps[] | undefined;
 }) {
-  const [hideTask, setHideTask] = useState<boolean>(false);
-    const [openBookmark, setOpenBookmark] = useState<boolean>(false);
-//   pass as state first before saving into the parent state
-const [inputTitle, setInputTitle] = useState<string>(nameTask);
-const [inputTask, setInputTask] = useState<string>(task);
-  const [endDateTaskState,setEndDateTaskState]=useState<Date|null>(null)
-  const startDate:any = new Date(date.split("/").reverse().join("-"));
-//   check if string empty
-  const endDateTask:any =endDate.trim()?new Date(endDate.split("/").reverse().join("-")):null
+  const [openBookmark, setOpenBookmark] = useState<boolean>(false);
+  const [openDelete, setOpenDelete] = useState<boolean>(false);
+  const buttonDeleteRef=useRef<HTMLButtonElement|null>(null)
+  //   pass as state first before saving into the parent state
+  const [inputTitle, setInputTitle] = useState<string>(nameTask);
+  const [inputTask, setInputTask] = useState<string>(task);
+  const [endDateTaskState, setEndDateTaskState] = useState<Date | null>(null);
+  const [bookmarkPosition, setBookmarkPosition] = useState({ top: 0, left: 0 });
+  const bookmarkParentRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (openBookmark && bookmarkParentRef.current) {
+      requestAnimationFrame(() => {
+        const rect = bookmarkParentRef.current!.getBoundingClientRect();
+        setBookmarkPosition({
+          top: rect.top + rect.height + window.scrollY,
+          left: rect.left + window.scrollX,
+        });
+      });
+    }
+  }, [openBookmark]);
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+  const clickToEdit = () => {
+    if (textAreaRef.current) {
+      textAreaRef.current.focus();
+    }
+  };
+  const startDate: any = new Date(date.split("/").reverse().join("-"));
+  //   check if string empty
+  const endDateTask: any = endDate.trim()
+    ? new Date(endDate.split("/").reverse().join("-"))
+    : null;
   const decreasingTime = endDateTask - startDate;
   const changeFormat = decreasingTime / (1000 * 3600 * 24);
-  const TimeIsActive=endDate.trim()?<TimeActiveIcon/>:<TimeIcon/>
-    const editIsActive=inputTask.trim()?<PenActiveIcon/>:<PenIcon/>
-    const bookmarkIsActive=label===undefined?<BookmarkActiveIcon/>:<BookmarkIcon/>
-//   changing date format to string
-useEffect(() => {
+  const TimeIsActive = endDate.trim() ? <TimeActiveIcon /> : <TimeIcon />;
+  const editIsActive = inputTask.trim() ? <PenActiveIcon /> : <PenIcon />;
+  const bookmarkIsActive =
+    (label ?? [])?.length >= 1 ? <BookmarkActiveIcon /> : <BookmarkIcon />;
+  //   changing date format to string
+  useEffect(() => {
     if (endDateTaskState) {
-      const day = String(endDateTaskState.getDate()).padStart(2,'0');
-      const month = String(endDateTaskState.getMonth() + 1).padStart(2,'0');
+      const day = String(endDateTaskState.getDate()).padStart(2, "0");
+      const month = String(endDateTaskState.getMonth() + 1).padStart(2, "0");
       const year = endDateTaskState.getFullYear();
-    //   save to the parent state
-      updateTask(index, { endDate: `${day}/${month}/${year}` });
+      //   save to the parent state
+      updateTask({ endDate: `${day}/${month}/${year}` });
     }
   }, [endDateTaskState]);
-  const bookmarkArray:LabelProps[]=[{type:'Important ASAP',color:'#E5F1FF'},{type:'Offline Meeting',color:'#FDCFA4'},{type:'Virtual Meeting',color:'#F9E9C3'},{type:'ASAP',color:'#AFEBDB'},{type:'Client Related',color:'#CBF1C2'},{type:'Self Task',color:'#CFCEF9'},{type:'Appointmens',color:'#F9E0FD'},{type:'Court Related',color:'#9DD0ED'}]
-  const BookmarkOptions=bookmarkArray.map((key,index)=>{return <button onClick={()=>updateTask(index,{label:[...(label||[]),key]})} className="w-[246px] h-[28px] flex justify-start items-center px-[14px] text-primary-darkGray" style={{backgroundColor:key.color}}>{key.type}</button>})
+  const bookmarkArray: LabelProps[] = [
+    { type: "Important ASAP", color: "#E5F1FF" },
+    { type: "Offline Meeting", color: "#FDCFA4" },
+    { type: "Virtual Meeting", color: "#F9E9C3" },
+    { type: "ASAP", color: "#AFEBDB" },
+    { type: "Client Related", color: "#CBF1C2" },
+    { type: "Self Task", color: "#CFCEF9" },
+    { type: "Appointmens", color: "#F9E0FD" },
+    { type: "Court Related", color: "#9DD0ED" },
+  ];
+  const BookmarkOptions = bookmarkArray.map((key, index) => {
+    return (
+      <button
+        key={`${key.type}-${index}`}
+        onClick={() => {
+          updateTask({ label: [...(label || []), key] });
+          setOpenBookmark(false);
+        }}
+        className="h-[28px] w-full flex justify-start items-center px-[12px] py-2 text-primary-darkGray cursor-pointer rounded-[5px]"
+        style={{ backgroundColor: key.color }}
+      >
+        {key.type}
+      </button>
+    );
+  });
+  useEffect(()=>{
+    const handleOutsideClickDelete=(event:MouseEvent)=>{
+      if( buttonDeleteRef.current &&!buttonDeleteRef.current.contains(event.target as Node)){
+        setOpenDelete(false)
+      }
+    }
+  window.addEventListener('mousedown',handleOutsideClickDelete)
+  return ()=>window.removeEventListener('mousedown',handleOutsideClickDelete)
+  },[buttonDeleteRef.current])
   return (
-    <div className="w-full h-fit border-b border-b-primary-gray py-[19px]">
+    <div className="w-full h-fit border-b border-b-primary-gray py-[22px] first:pt-0 last:border-b-0   relative">
       <div className="flex justify-between min-h-5">
         <div className="flex justify-start items-start text-left gap-[22.5px]">
           <label className="flex items-center cursor-pointer relative mt-[3px]">
             <input
               type="checkbox"
               checked={checked}
-              onChange={() => {updateTask(index, { checked: !checked });setHideTask(true)}}
+              onChange={() => {
+                updateTask({ checked: !checked });
+                // toggleHide();
+              }}
               className="peer size-[18px] cursor-pointer transition-all appearance-none border-primary-gray border"
               id="check"
             />
@@ -94,98 +156,154 @@ useEffect(() => {
                 viewBox="0 0 20 20"
                 fill="currentColor"
                 stroke="currentColor"
-                stroke-width="1"
+                strokeWidth="1"
               >
                 <path
-                  fill-rule="evenodd"
+                  fillRule="evenodd"
                   d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clip-rule="evenodd"
+                  clipRule="evenodd"
                 ></path>
               </svg>
             </span>
           </label>
-          <div className={`resize-none w-[335px] ${
+          <div
+            className={`resize-none w-[335px] ${
               checked
-                ? `text-primary-gray ${hideTask?'h-[30px]':'h-fit'} line-through overflow-hidden whitespace-nowrap`
+                ? `text-primary-gray ${
+                    hideTask ? "h-[26.5px]" : "h-fit"
+                  } line-through overflow-hidden whitespace-nowrap`
                 : "text-primary-darkGray "
-            }`}>
-          <TextareaAutosize
-            value={inputTitle}
-            readOnly={checked}
-            onFocus={() => {
-              if (checked) updateTask(index, { checked: false });
-              setInputTitle(nameTask);
-            }}
-            onBlur={() => {
-              updateTask(index, { nameTask: inputTitle });
-            }}
-            onInput={(e) => setInputTitle(e.currentTarget.value)}
-            className={`h-fit resize-none w-[335px] ${
-              checked
-                ? `text-primary-gray line-through ${hideTask?'':'overflow-hidden'} `
-                : "text-primary-darkGray"
             }`}
-          />
+          >
+            <TextareaAutosize
+              value={inputTitle}
+              readOnly={checked}
+              onFocus={() => {
+                if (checked) updateTask({ checked: false });
+                setInputTitle(nameTask);
+              }}
+              onBlur={() => {
+                updateTask({ nameTask: inputTitle });
+              }}
+              onInput={(e) => setInputTitle(e.currentTarget.value)}
+              className={`h-fit resize-none w-[335px] ${
+                checked
+                  ? `text-primary-gray line-through ${
+                      hideTask ? "" : "overflow-hidden"
+                    } `
+                  : "text-primary-darkGray"
+              }`}
+            />
           </div>
         </div>
         <div className="min-w-[219px] h-5 mr-[34px] flex text-sm items-center justify-end">
           {!checked && (
             <p className="text-indicator-Red">
-              {endDateTask<=startDate?'Invalid Date':`${changeFormat} Day${changeFormat === 1 ? "" : "s"} left`}
+              {!endDate.trim()
+                ? ""
+                : endDateTask <= startDate
+                ? "Invalid Date"
+                : `${changeFormat} Day${changeFormat === 1 ? "" : "s"} left`}
             </p>
           )}
           <p className="ml-[19px] text-primary-darkGray">{date}</p>
           {!hideTask ? (
             <p
               onClick={() => {
-                setHideTask((prev) => !prev);
+                toggleHide();
               }}
-              className="rotate-180 mr-[15px] ml-[10px] size-fit"
+              className="rotate-180 mr-[15px] ml-[10px] size-fit cursor-pointer"
             >
               <ArrowHeadDownIcon />
             </p>
           ) : (
             <p
               onClick={() => {
-                setHideTask((prev) => !prev);
+                toggleHide()
               }}
-              className="mr-[15px] ml-[10px] size-fit"
+              className="mr-[15px] ml-[10px] size-fit cursor-pointer"
             >
               <ArrowHeadDownIcon />
             </p>
           )}
-          <p>
+          <button onClick={()=>setOpenDelete(prev=>!prev)} className="relative cursor-pointer size-fit">
             <NavigationMenuChat />
-          </p>
+            {openDelete&&<button ref={buttonDeleteRef} onClick={()=>deleteTask()} className="cursor-pointer w-[126px] h-[43px] text-indicator-Red absolute top-4 right-0 border border-primary-gray rounded-[5px] text-left pl-[18.39px] z-30 bg-white">Delete</button>}
+          </button>
         </div>
       </div>
-      {!hideTask&&<div className="w-[547px] min-h-[108px] ml-10 mt-[12.73px]">
-        {/* date input */}
-        <div className="w-fit flex items-center gap-[19.67px]">
+      {!hideTask && (
+        <div className="w-[547px] min-h-[108px] ml-10 mt-[12.73px]">
+          {/* date input */}
+          <div className="w-fit flex items-center gap-[19.67px]">
             {TimeIsActive}
             <div className="w-[193px] h-10 rounded-[5px] relative">
-                <div className="absolute right-4 top-3"><CalenderIcon/></div>
-            <DatePicker locale={'custom'} placeholderText="DD/MM/YY" selected={endDateTaskState||endDateTask} onChange={(date)=>setEndDateTaskState(date as Date)} dateFormat={'dd/MM/yy'}/>
+              <div className="absolute right-4 top-3">
+                <CalenderIcon />
+              </div>
+              <DatePicker
+                locale={"custom"}
+                placeholderText="DD/MM/YY"
+                selected={endDateTaskState || endDateTask}
+                onChange={(date) => setEndDateTaskState(date as Date)}
+                dateFormat={"dd/MM/yy"}
+              />
             </div>
+          </div>
+          <div className=" w-full h-fit flex gap-[23px] mt-[13px]">
+            <button onClick={clickToEdit} className="size-fit cursor-pointer">
+              {editIsActive}
+            </button>
+            <TextareaAutosize
+            placeholder="No Description"
+              ref={textAreaRef}
+              value={inputTask}
+              readOnly={checked}
+              onFocus={() => {
+                if (checked) updateTask({ checked: false });
+                setInputTask(task);
+              }}
+              onBlur={() => {
+                updateTask({ task: inputTask });
+              }}
+              onInput={(e) => setInputTask(e.currentTarget.value)}
+              className="w-full h-full resize-none text-primary-darkGray"
+            />
+          </div>
+          <div
+            ref={bookmarkParentRef}
+            className=" w-[619px] h-fit relative flex items-center pr-[9.45px] pb-[13px] pt-[7px] gap-[18px] mt-[15px]  bg-[#F9F9F9]"
+          >
+            <button
+              onClick={() => setOpenBookmark((prev) => !prev)}
+              className="cursor-pointer size-fit"
+            >
+              {bookmarkIsActive}
+            </button>
+            <div className="flex flex-wrap gap-2.5">
+              {label?.map((key, index) => {
+                return (
+                  <div
+                    key={`${key.type}-${index}`}
+                    className="w-fit rounded-[5px] flex px-3 py-2 justify-center items-center font-semibold text-primary-darkGray"
+                    style={{ backgroundColor: key.color }}
+                  >
+                    {key.type}
+                  </div>
+                );
+              })}
+            </div>
+            {openBookmark && (
+              // <div className="w-[277px] h-fit absolute left-0 top-11 bg-white border border-primary-gray z-50 p-[15px] gap-[11px] flex flex-col rounded-[5px]">
+              //   {BookmarkOptions}
+              // </div>
+              <BookmarkDropdown position={bookmarkPosition}>
+                {BookmarkOptions}
+              </BookmarkDropdown>
+            )}
+          </div>
         </div>
-        <div className=" w-full h-fit flex gap-[23px] mt-[13px]">
-            {editIsActive}
-            <TextareaAutosize 
-            value={inputTask}
-            readOnly={checked}
-            onFocus={() => {
-              if (checked) updateTask(index, { checked: false });
-              setInputTask(task);
-            }}
-            onBlur={() => {
-              updateTask(index,{ task:inputTask});
-            }}
-            onInput={(e) => setInputTask(e.currentTarget.value)} className="w-full h-full resize-none text-primary-darkGray"/>
-        </div>
-        <div className=" w-full h-fit flex gap-[23px] mt-[15px] border border-gray-600">
-            {bookmarkIsActive}
-        </div>
-      </div>}
+      )}
     </div>
   );
 }

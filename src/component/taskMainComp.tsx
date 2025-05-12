@@ -1,44 +1,113 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef } from "react";
 import { ArrowDownIcon, ArrowHeadDownIcon } from "./icon";
 import TaskComp from "./task";
+import { pre } from "motion/react-client";
 export default function TaskMainComp() {
+  const [hideTask, setHideTask] = useState<boolean[]>([]);
   const [openDropDown, setOpenDropdown] = useState<{
     open: boolean;
     value: "My State" | "Personal Errands" | "Urgent To-Do";
   }>({ open: false, value: "My State" });
-  const [DummyTaskState,setDummyTaskState]=useState<TaskProps[]>([
-    {
-    nameTask:'Close off Case #012920- RODRIGUES, Amiguel',
-    date:'12/06/2021',
-    endDate:'14/06/2021',
-    checked:false,
-    task:'Closing off this case since this application has been cancelled. No one really understand how this case could possibly be cancelled. The options and the documents within this document were totally a guaranteed for a success!',
-    label:[]
-  },
-{
-    nameTask:'Set up documentation report for several Cases : Case 145443, Case 192829 and Case 182203',
-    date:'14/06/2021',
-    endDate:'18/06/2021',
-    checked:false,
-    task:'All Cases must include all payment transactions, all documents and forms filled. All conversations in comments and messages in channels and emails should be provided as well in.',
-    label:[]
-  },
-{
-    nameTask:'Set up with Dr Blake',
-    date:'22/06/2021',
-    endDate:'02/07/2021',
-    checked:false,
-    task:'No Description',
-    label:[]
+  const openDropdownRef=useRef<HTMLDivElement|null>(null)
+  const [DummyTaskState, setDummyTaskState] = useState<TaskProps[]>([
+    // {
+    //   nameTask: "Close off Case #012920- RODRIGUES, Amiguel",
+    //   date: "12/06/2021",
+    //   endDate: "14/06/2021",
+    //   checked: false,
+    //   task: "Closing off this case since this application has been cancelled. No one really understand how this case could possibly be cancelled. The options and the documents within this document were totally a guaranteed for a success!",
+    //   label: [],
+    //   type: "My State",
+    // },
+    // {
+    //   nameTask:
+    //     "Set up documentation report for several Cases : Case 145443, Case 192829 and Case 182203",
+    //   date: "14/06/2021",
+    //   endDate: "18/06/2021",
+    //   checked: false,
+    //   task: "All Cases must include all payment transactions, all documents and forms filled. All conversations in comments and messages in channels and emails should be provided as well in.",
+    //   label: [],
+    //   type: "My State",
+    // },
+    // {
+    //   nameTask: "Set up with Dr Blake",
+    //   date: "22/06/2021",
+    //   endDate: "02/07/2021",
+    //   checked: false,
+    //   task: "No Description",
+    //   label: [],
+    //   type: "My State",
+    // },
+  ]);
+  const options = ["My State", "Personal Errands", "Urgent To-Do"] as const;
+  function addTask() {
+    const date = new Date();
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = String(date.getFullYear());
+    const task: TaskProps = {
+      nameTask: "Type Task Title",
+      date: `${day}/${month}/${year}`,
+      endDate: "",
+      checked: false,
+      task: "No Description",
+      label: [],
+      type: openDropDown.value,
+    };
+    setDummyTaskState((prev) => [task, ...prev]);
+    setHideTask((prev) => [false, ...prev]);
   }
-  ])
-  const options=["My State","Personal Errands","Urgent To-Do"]as const
-  useEffect(()=>{console.log(DummyTaskState)},[DummyTaskState])
-  // useEffect(()=>{setDummyTaskState(prev=>[...prev,...DummyTaskState])},[dummyTask])
-  // useEffect(() => {
-  //   console.log(openDropDown.open);
-  // }, [openDropDown.open]);
+  useEffect(() => {
+    console.log(DummyTaskState);
+  }, [DummyTaskState]);
+  useEffect(()=>{console.log('Type: ',openDropDown.value)},[openDropDown.value])
+  useEffect(()=>{
+    const handleOutsideClickDelete=(event:MouseEvent)=>{
+      if( openDropdownRef.current &&!openDropdownRef.current.contains(event.target as Node)){
+        setOpenDropdown({open:false,value:openDropDown.value})
+      }
+    }
+  window.addEventListener('mousedown',handleOutsideClickDelete)
+  return ()=>window.removeEventListener('mousedown',handleOutsideClickDelete)
+  },[openDropdownRef.current])
+  // Mock API Get Task
+  useEffect(()=>{
+    const getTask=async()=>{
+      const response=await fetch('https://dummyjson.com/c/418a-6cbe-4a0a-a651',{method:'get'})
+      const data=await response.json()
+      if(response.ok){
+        setDummyTaskState(data)
+        console.log('Get task :',data)
+      }
+    }
+    getTask()
+  },[])
+    // Mock API POST Task
+    const firstRender=useRef(true)
+  useEffect(()=>{
+    if(firstRender.current){
+      firstRender.current=false
+      return
+    }
+    const fetchPostTask = async () => {
+        const response = await fetch(
+          "https://jsonplaceholder.typicode.com/posts",
+          {
+            method: "post",
+            headers: {
+              "Content-type": "application/json; charset=UTF-8",
+            },
+            body: JSON.stringify(DummyTaskState),
+          }
+        );
+        const data = await response.json();
+        if (response.ok) {
+          console.log("POST Task Success :", data);
+        }
+      };
+    fetchPostTask()
+  },[DummyTaskState])
   return (
     <div className="w-[692px] h-[677px] ml-[29px] mb-[42px] mr-[13px] mt-[18px]">
       <div className="w-full h-[40px]  pr-[10.1px] flex justify-between">
@@ -61,11 +130,22 @@ export default function TaskMainComp() {
             )}
             <AnimatePresence>
               {openDropDown.open && (
-                <div className="absolute bg-white z-50 top-[50px] left-0 w-[288px] h-[80px] border border-primary-gray rounded-[5px] flex flex-col">
-                    {options.filter(option=>openDropDown.value!==option).map((key,index)=>(
-                        <>
-                            <button onClick={()=>setOpenDropdown((prev) => ({...prev,open:false,value:key }))} key={index+'button'} className="cursor-pointer w-full h-1/2 first:border-b first:border-b-primary-gray flex items-center justify-start px-[15px]">{key}</button>
-                        </>
+                <div ref={openDropdownRef} className="absolute bg-white z-50 top-[50px] left-0 w-[288px] h-[80px] border border-primary-gray rounded-[5px] flex flex-col">
+                  {options
+                    .filter((option) => openDropDown.value !== option)
+                    .map((key, index) => (
+                      <>
+                        <button
+                          onClick={() =>{
+                            setOpenDropdown({open:false,value:key})
+                          }
+                          }
+                          key={index + "button"}
+                          className="cursor-pointer w-full h-1/2 first:border-b first:border-b-primary-gray flex items-center justify-start px-[15px]"
+                        >
+                          {key}
+                        </button>
+                      </>
                     ))}
                 </div>
               )}
@@ -74,18 +154,49 @@ export default function TaskMainComp() {
         </div>
         <button
           type="button"
+          onClick={() => addTask()}
           className="w-[98.8px] h-full rounded-[5px] flex justify-center items-center font-semibold bg-primary-blue text-white "
         >
           New Task
         </button>
       </div>
-      <div className="w-full h-[615px] mt-5 overflow-y-auto">
-        {DummyTaskState.map((task,index)=>{
-          const updateTask=(index:number,updates:Partial<TaskProps>)=>{
-            setDummyTaskState(prev=>prev.map((task,i)=>i===index?{...task,...updates}:task))
-          }
-          return (<TaskComp label={task.label} updateTask={updateTask} key={`${task.nameTask}-${index}`} index={index} task={task.task} date={task.date} endDate={task.endDate} checked={task.checked} nameTask={task.nameTask}/>)})}
+      <div className="w-full h-[615px] mt-5 overflow-y-auto relative">
+        {DummyTaskState?.filter(task=>task.type===openDropDown.value).map((task, index) => {
+          const updateTask = (updates: Partial<TaskProps>) => {
+            setDummyTaskState((prev) =>
+              prev.map((task, i) =>
+                i === index ? { ...task, ...updates } : task
+              )
+            );
+          };
+          const deleteTask = () => {
+            setDummyTaskState((prev) => prev.filter((_, i) => i !== index));
+          };
+          const toggleHide = () => {
+            setHideTask((prev) => {
+              const updated = [...prev];
+              updated[index] = !updated[index];
+              return updated;
+            });
+          };
+          return (
+            <TaskComp
+              hideTask={hideTask[index] ?? false}
+              toggleHide={()=>toggleHide()}
+              label={task.label}
+              updateTask={updateTask}
+              deleteTask={deleteTask}
+              key={`${task.nameTask}-${index}`}
+              index={index}
+              task={task.task}
+              date={task.date}
+              endDate={task.endDate}
+              checked={task.checked}
+              nameTask={task.nameTask}
+            />
+          );
+        })}
       </div>
     </div>
   );
-} 
+}

@@ -55,14 +55,14 @@ export default function ChatComp({
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M7.17128 24.3748L27.2356 10.0322L27.277 10.0902C27.2633 10.0708 27.2496 10.0515 27.2358 10.0322C23.2752 4.49158 15.5729 3.21073 10.0322 7.17136C4.49162 11.132 3.21075 18.8342 7.17128 24.3748Z"
           fill="#2F80ED"
         />
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M7.17135 24.3749C7.17137 24.3749 7.17139 24.3749 7.17141 24.3749C11.132 29.9156 18.8344 31.1964 24.375 27.2358C29.9156 23.2752 31.1965 15.5729 27.2359 10.0322C27.2241 10.0157 27.2122 9.99924 27.2004 9.98282L27.2357 10.0322L7.17135 24.3749Z"
           fill="#F8F8F8"
         />
@@ -75,8 +75,8 @@ export default function ChatComp({
           fill="#2F80ED"
         />
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M9.74389 22.5362C12.689 26.6561 18.4163 27.6086 22.5363 24.6635C26.6563 21.7184 27.6087 15.991 24.6636 11.8711C21.7185 7.75109 15.9912 6.79866 11.8712 9.74374C7.75123 12.6888 6.7988 18.4162 9.74389 22.5362Z"
           fill="#E9F3FF"
         />

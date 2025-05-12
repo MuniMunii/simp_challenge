@@ -6,13 +6,15 @@ import {
   ArrowLeftGrayIcon,
   CloseGrayIcon,
 } from "./icon";
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect,useRef, type SetStateAction } from "react";
 import {motion,useInView}from "framer-motion"
 import ChatComp from "./chatComp";
 export default function InboxComp({
+  setIsLoadingEffect,
   loadingEffect,
   isActive,
 }: {
+  setIsLoadingEffect:React.Dispatch<SetStateAction<boolean>>
   isActive: "task" | "inbox" | null;
   loadingEffect: boolean;
 }) {
@@ -119,27 +121,24 @@ export default function InboxComp({
   ];
   //   Mock fetch Post
   useEffect(() => {
+    setIsLoadingEffect(true)
         const fetchPostDummyMessages = async () => {
         const response = await fetch(
-          "https://jsonplaceholder.typicode.com/posts",
+          "https://dummyjson.com/c/3bbe-18f5-4250-a1ec",
           {
-            method: "post",
-            headers: {
-              "Content-type": "application/json; charset=UTF-8",
-            },
-            body: JSON.stringify(dummyChat),
+            method: "get",
           }
         );
         const data = await response.json();
         if (response.ok) {
-          console.log("POST Messages Success :", data);
+              setIsLoadingEffect(false)
+          console.log("get Messages Success :", data);
           setDummyText(dummyChat);
         }
       };
     if (isActive === "inbox") {
       fetchPostDummyMessages();
     }
-    return  () => {fetchPostDummyMessages()}
   }, []);
   if (openChat) {
     return (

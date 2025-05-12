@@ -38,7 +38,7 @@ function App() {
             aria-labelledby="floating-button"
             className="absolute bottom-[110px] right-[34px]  w-[734px] h-[737px] rounded-[5px] bg-white flex flex-col"
           >
-            {isActive === "inbox" ? <InboxComp isActive={isActive} loadingEffect={loadingEffect}/> : (
+            {isActive === "inbox" ? <InboxComp isActive={isActive} setIsLoadingEffect={setLoadingEffect} loadingEffect={loadingEffect}/> : (
               <TaskMainComp/>
             )}
           </motion.div>
