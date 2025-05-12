@@ -1,8 +1,7 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { useEffect, useState,useRef } from "react";
-import { ArrowDownIcon, ArrowHeadDownIcon } from "./icon";
+import { ArrowHeadDownIcon } from "./icon";
 import TaskComp from "./task";
-import { pre } from "motion/react-client";
 export default function TaskMainComp() {
   const [hideTask, setHideTask] = useState<boolean[]>([]);
   const [openDropDown, setOpenDropdown] = useState<{

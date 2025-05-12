@@ -3,11 +3,8 @@ import {
   UserGrayIcon,
   UserIcon,
   LoadingIcon,
-  ArrowLeftGrayIcon,
-  CloseGrayIcon,
 } from "./icon";
-import React, { useState, useEffect,useRef, type SetStateAction } from "react";
-import {motion,useInView}from "framer-motion"
+import React, { useState, useEffect, type SetStateAction } from "react";
 import ChatComp from "./chatComp";
 export default function InboxComp({
   setIsLoadingEffect,
