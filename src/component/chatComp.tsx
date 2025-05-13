@@ -271,16 +271,16 @@ function sendMessage() {
                       >
                         {key.name}
                       </p>
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-2 items-end">
                         {key.reply&&<div className="p-2.5 bg-primary-iconBg text-left rounded-[5px] text-primary-darkGray text-sm">{key.reply}</div>}
                         <div
-                        className={`flex min-w-[300px] relative gap-[7px] justify-between ${
+                        className={`flex min-w-[300px] max-w-[500px] relative gap-[7px] justify-between ${
                           key.name === "You" ? "flex-row" : "flex-row-reverse"
                         }`}
                       >
                       <ChatMenu user={key.name} reply={key.chat} />
                         <div
-                          className={`p-2.5 text-left w-fit rounded-[5px] mb-1 text-primary-darkGray ${
+                          className={`p-2.5 text-left w-fit max-w-[518px] break-all rounded-[5px] mb-1 text-primary-darkGray ${
                             key.name === "You"
                               ? "bg-chat-Main2"
                               : index % 2 === 0
@@ -317,8 +317,8 @@ function sendMessage() {
         )}
         <div className="w-full flex justify-between gap-[13px] mt-[25px] relative">
           {replyText.active && (
-            <div className="absolute w-[603px] left-0 text-left bottom-[70%] z-0 rounded-[5px] bg-primary-iconBg border border-primary-gray">
-              <div className="w-full h-fit  relative px-[20px] py-[17px]">
+            <div className="absolute w-[603px] left-0 text-left bottom-[80%] z-0 rounded-[5px] bg-primary-iconBg border border-primary-gray">
+              <div className="w-full h-fit  relative px-[20px] py-[15px]">
                 <div
                   onClick={() => {
                     setReplyText({ active: false, reply: "", user: "" });
@@ -327,7 +327,7 @@ function sendMessage() {
                 >
                   <CloseGrayIcon size={12} />
                 </div>
-                <p className="font-semibold">Replying to {replyText.user}</p>
+                <p className="font-semibold text-sm">Replying to {replyText.user}</p>
                 <p className="text-primary-darkGray text-sm">{replyText.reply}</p>
               </div>
             </div>
@@ -336,12 +336,12 @@ function sendMessage() {
           value={inputText}
             onChange={(e) => setInputText(e.currentTarget.value)}
             placeholder="Type a new message"
-            className="pl-[16px] py-[12.81px] flex w-[603px] h-[40px] border-primary-gray border rounded-[5px] z-20 bg-white"
+            className={`pl-[16px] py-[12.81px] flex w-[603px] outline-none h-[40px] border-primary-gray border rounded-[5px] ${replyText.active?'rounded-t-none':''} z-20 bg-white`}
           ></input>
           <button
           onClick={()=>sendMessage()}
             type="button"
-            className="w-[76px] h-[40px] bg-primary-blue rounded-[5px] px-4 py-2 font-semibold text-primary-white"
+            className="w-[76px] cursor-pointer h-[40px] bg-primary-blue rounded-[5px] px-4 py-2 font-semibold text-primary-white"
           >
             Send
           </button>

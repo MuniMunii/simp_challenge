@@ -209,7 +209,7 @@ export default function InboxComp({
                           <p>{lastHistory.date}</p>
                         </div>
                         <p className="font-semibold">{lastHistory.name}:</p>
-                        <p>{lastHistory.chat}</p>
+                        <p className="max-w-[518px] text-ellipsis break-words">{lastHistory.chat}</p>
                       </div>
                     </div>
                   </>
