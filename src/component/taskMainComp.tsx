@@ -2,6 +2,7 @@ import { AnimatePresence } from "framer-motion";
 import { useEffect, useState,useRef } from "react";
 import { ArrowHeadDownIcon, LoadingIcon } from "./icon";
 import TaskComp from "./task";
+import { v4 } from "uuid";
 export default function TaskMainComp() {
   const [hideTask, setHideTask] = useState<boolean[]>([]);
   const [methodFetch,setMethodFetch]=useState<MethodFetch>('POST')
@@ -17,6 +18,7 @@ export default function TaskMainComp() {
   const buttonDropdownRef=useRef<HTMLDivElement|null>(null)
   const [DummyTaskState, setDummyTaskState] = useState<TaskProps[]>([
     // {
+    //   id:12,
     //   nameTask: "Close off Case #012920- RODRIGUES, Amiguel",
     //   date: "12/06/2021",
     //   endDate: "14/06/2021",
@@ -26,6 +28,7 @@ export default function TaskMainComp() {
     //   type: "My State",
     // },
     // {
+      // id:15,
     //   nameTask:
     //     "Set up documentation report for several Cases : Case 145443, Case 192829 and Case 182203",
     //   date: "14/06/2021",
@@ -36,6 +39,7 @@ export default function TaskMainComp() {
     //   type: "My State",
     // },
     // {
+    //   id:14,
     //   nameTask: "Set up with Dr Blake",
     //   date: "22/06/2021",
     //   endDate: "02/07/2021",
@@ -52,6 +56,7 @@ export default function TaskMainComp() {
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = String(date.getFullYear());
     const task: TaskProps = {
+      id:v4(),
       nameTask: "Type Task Title",
       date: `${day}/${month}/${year}`,
       endDate: "",
@@ -70,7 +75,7 @@ export default function TaskMainComp() {
   useEffect(()=>{console.log('Type: ',openDropDown.value)},[openDropDown.value])
   useEffect(()=>{
     const handleOutsideClickDelete=(event:MouseEvent)=>{
-      if( openDropdownRef.current && buttonDropdownRef.current &&!openDropdownRef.current.contains(event.target as Node)&&!buttonDropdownRef.current.contains(event.target as Node)){
+      if( openDropdownRef.current&& buttonDropdownRef.current &&!openDropdownRef.current.contains(event.target as Node)&&!buttonDropdownRef.current.contains(event.target as Node)){
         setOpenDropdown((prev)=>({...prev,open:false}))
       }
     }
@@ -82,7 +87,7 @@ export default function TaskMainComp() {
   // Mock API Get Task
   useEffect(()=>{
     const getTask=async()=>{
-      const response=await fetch('https://dummyjson.com/c/418a-6cbe-4a0a-a651',{method:'get'})
+      const response=await fetch('https://dummyjson.com/c/9c39-046c-40e8-a49b',{method:'get'})
       const data=await response.json()
       if(response.ok){
         setDummyTaskState(data)
@@ -124,11 +129,11 @@ export default function TaskMainComp() {
           >
             <p className="">{openDropDown.value}</p>
             {openDropDown.open ? (
-              <div className="size-fit">
+              <div className="size-fit rotate-[180deg]">
                 <ArrowHeadDownIcon />
               </div>
             ) : (
-              <div className="rotate-[180deg] size-fit">
+              <div className="size-fit">
                 <ArrowHeadDownIcon />
               </div>
             )}
@@ -162,21 +167,23 @@ export default function TaskMainComp() {
         </button>
       </div>
       <div className={`w-full h-[615px] mt-5 ${disableScroll?'overflow-y-hidden':'overflow-y-auto'} relative`}>
-        {loadingEffect?<div className="w-full h-[615px] flex flex-col justify-center items-center"><LoadingIcon/><p>Loading Task List</p></div>:DummyTaskState?.filter(task=>task.type===openDropDown.value).map((task, index) => {
+        {loadingEffect?<div className="w-full h-[615px] flex flex-col justify-center items-center"><LoadingIcon/><p>Loading Task List</p></div>:
+        DummyTaskState?.filter(task=>task.type===openDropDown.value).map((task, index) => {
           const updateTask = (updates: Partial<TaskProps>) => {
             setDummyTaskState((prev) =>
-              prev.map((task, i) =>
-                i === index ? { ...task, ...updates } : task
+              prev.map((child) =>
+                child.id === task.id ? { ...child, ...updates } : child
               )
             );
           };
           const deleteTask = () => {
-            setDummyTaskState((prev) => prev.filter((_, i) => i !== index));
+            setDummyTaskState((prev) => prev.filter((child) => child.id !== task.id));
           };
           const toggleHide = () => {
             setHideTask((prev) => {
               const updated = [...prev];
-              updated[index] = !updated[index];
+              const indexChild=DummyTaskState.findIndex(child => child.id === task.id);
+              if (indexChild !== -1) updated[indexChild] = !updated[indexChild];
               return updated;
             });
           };
@@ -190,7 +197,7 @@ export default function TaskMainComp() {
               updateTask={updateTask}
               deleteTask={deleteTask}
               key={`${task.nameTask}-${index}`}
-              index={index}
+              index={DummyTaskState.findIndex(child => child.id === task.id)}
               task={task.task}
               date={task.date}
               endDate={task.endDate}

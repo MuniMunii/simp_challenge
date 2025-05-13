@@ -15,6 +15,7 @@ type LabelProps={type:'Important ASAP',color:'#E5F1FF'}|{type:'Offline Meeting',
 type MethodFetch='POST'|'DELETE'|'UPDATE'|undefined
 type TypeProps="My State" | "Personal Errands" | "Urgent To-Do"
 interface TaskProps{
+  id:string;
   nameTask:string;
   date:string
   endDate:string

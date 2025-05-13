@@ -196,7 +196,7 @@ export default function TaskComp({
               }}
               onInput={(e) => setInputTitle(e.currentTarget.value)}
               className={`h-fit resize-none w-[335px]
-                ${inputTitle==='Type Task Title'||inputTitle===''?'border border-primary-gray w-[380px] px-[14px] py-2.5 rounded-[5px] flex items-center':''}
+                ${inputTitle==='Type Task Title'&&!checked||inputTitle===''&&!checked?'border border-primary-gray w-[380px] px-[14px] py-2.5 rounded-[5px] flex items-center':''}
                  ${
                 checked
                   ? `text-primary-gray line-through ${
