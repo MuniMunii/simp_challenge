@@ -1,50 +1,126 @@
 import React, { useEffect, useState, useRef } from "react";
 import { AnimatePresence, motion, useInView } from "framer-motion";
 import { ArrowLeftGrayIcon, CloseGrayIcon, NavigationMenuChat } from "./icon";
+import dayjs from "dayjs";
 export default function ChatComp({
   openChat,
   setOpenChat,
+  setDummyText,
 }: {
   openChat: DummyTextProps;
+  setDummyText: React.Dispatch<React.SetStateAction<DummyTextProps[] | undefined>>;
   setOpenChat: React.Dispatch<React.SetStateAction<DummyTextProps | null>>;
 }) {
+  const [replyText, setReplyText] = useState<{
+    user: string | null;
+    reply: string;
+    active: boolean;
+  }>({ user: "", reply: "", active: false });
+  const [inputText, setInputText] = useState<string>("");
   const refNewChat = useRef(null);
   const scrollContainerref = useRef(null);
+function sendMessage() {
+  if (inputText === "") return;
+  const formattedDate = dayjs().format("MMMM DD, YYYY HH:mm");
+  const newMessage: HistoryProps = {
+    name: "You",
+    chat: inputText,
+    date: formattedDate,
+    reply: replyText.reply ? replyText.reply : undefined,
+  };
+  setOpenChat((prev) => {
+    if (!prev) return prev;
+    const updatedChat = {
+      ...prev,
+      history: [...prev.history, newMessage],
+    };
+    setDummyText((prevList) => {
+      if (!prevList) return prevList;
+      return prevList.map((chat) =>
+        chat.namaGroup === prev.namaGroup ? updatedChat : chat
+      );
+    });
+    return updatedChat;
+  });
+  setInputText("");
+  setReplyText({ user: "", reply: "", active: false });
+}
   const chatInView = useInView(refNewChat, {
     root: scrollContainerref,
     margin: "0px",
     once: false,
   });
-  useEffect(() => {
-    console.log(chatInView);
-  }, [chatInView]);
-  const ChatMenu=()=>{
-    const [openChatMenu,setOpenChatMenu]=useState<boolean>(false)
-    const navRef=useRef<HTMLDivElement|null>(null)
-    useEffect(()=>{
-    const handleClickOutside = (event: MouseEvent) => {
-      if (navRef.current && !navRef.current.contains(event.target as Node)) {
-        setOpenChatMenu(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };},[setOpenChatMenu])
+  // useEffect(() => {
+  //   console.log(chatInView);
+  // }, [chatInView]);
+  const ChatMenu = ({
+    user,
+    reply,
+  }: {
+    user: string | null;
+    reply: string;
+  }) => {
+    const [openChatMenu, setOpenChatMenu] = useState<boolean>(false);
+    const navRef = useRef<HTMLDivElement | null>(null);
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (navRef.current && !navRef.current.contains(event.target as Node)) {
+          setOpenChatMenu(false);
+        }
+      };
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, [setOpenChatMenu]);
     return (
-        <>
-    <div ref={navRef} onClick={()=>setOpenChatMenu(prev=>!prev)} className="size-fit cursor-pointer">
-        <NavigationMenuChat/>
-    </div>
-    <AnimatePresence>
-    {openChatMenu&&<motion.div animate={{opacity:1}} initial={{opacity:0}} exit={{opacity:0}} className="w-[126px] h-[80px] border rounded-[5px] border-[#BDBDBD] bg-white absolute top-[9px] flex flex-col">
-        <div className="w-full h-1/2 border-b border-b-[#BDBDBD] text-primary-blue flex items-center justify-start px-[18px]">Edit</div>
-        <div className="w-full h-1/2 text-indicator-Red flex items-center justify-start px-[18px]">Delete</div>
-        </motion.div>}
-    </AnimatePresence>
-    </>
-    )
-  }
+      <>
+        <div
+          ref={navRef}
+          onClick={() => setOpenChatMenu((prev) => !prev)}
+          className="size-fit cursor-pointer"
+        >
+          <NavigationMenuChat />
+        </div>
+        <AnimatePresence>
+          {openChatMenu ? (
+            user === "You" ? (
+              <motion.div
+                animate={{ opacity: 1 }}
+                initial={{ opacity: 0 }}
+                exit={{ opacity: 0 }}
+                className="w-[126px] h-[80px] border rounded-[5px] border-[#BDBDBD] bg-white absolute top-[9px] flex flex-col"
+              >
+                <div className="w-full h-1/2 border-b border-b-[#BDBDBD] text-primary-blue flex items-center justify-start px-[18px]">
+                  Edit
+                </div>
+                <div className="w-full h-1/2 text-indicator-Red flex items-center justify-start px-[18px]">
+                  Delete
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                animate={{ opacity: 1 }}
+                initial={{ opacity: 0 }}
+                exit={{ opacity: 0 }}
+                className="w-[126px] h-[80px] border rounded-[5px] border-[#BDBDBD] bg-white absolute top-[9px] flex flex-col"
+              >
+                <div className="w-full h-1/2 border-b border-b-[#BDBDBD] text-primary-blue flex items-center justify-start px-[18px]">
+                  Share
+                </div>
+                <div
+                  onClick={() => setReplyText({ user, reply, active: true })}
+                  className="w-full cursor-pointer h-1/2 text-primary-blue flex items-center justify-start px-[18px]"
+                >
+                  Reply
+                </div>
+              </motion.div>
+            )
+          ) : null}
+        </AnimatePresence>
+      </>
+    );
+  };
   const LoadingIconSupport = () => {
     return (
       <svg
@@ -111,7 +187,7 @@ export default function ChatComp({
           className="cursor-pointer absolute right-[21px] top-[28px] bottom-[20.5px]"
           onClick={() => setOpenChat(null)}
         >
-          <CloseGrayIcon />
+          <CloseGrayIcon size={14} />
         </p>
       </div>
       <div className="w-full h-full flex flex-col justify-between px-5 pt-[13.5px] pb-[19px] relative">
@@ -119,16 +195,18 @@ export default function ChatComp({
           ref={scrollContainerref}
           className="w-full h-[573px] overflow-y-auto"
         >
-            {openChat.history.find(key=>key.new===true) && !chatInView && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      exit={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="w-[141px] z-50 h-[33.89px] flex items-center justify-center absolute bottom-[78px] left-[293px] right-[297px] text-primary-blue rounded-[5px] bg-sticker-1"
-                    >
-                      New Message
-                    </motion.div>
-                  )}
+          {openChat.history.find((key) => key.new === true) &&
+            !chatInView &&
+            !replyText.active && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                exit={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="w-[141px] z-50 h-[33.89px] flex items-center justify-center absolute bottom-[78px] left-[293px] right-[297px] text-primary-blue rounded-[5px] bg-sticker-1"
+              >
+                New Message
+              </motion.div>
+            )}
           {(() => {
             let lastRenderedDate: string | null = null;
             return openChat.history.map((key, index) => {
@@ -146,7 +224,7 @@ export default function ChatComp({
               lastRenderedDate = formattedDate;
               return (
                 <React.Fragment key={index}>
-                  {(shouldRenderDate&&openChat.type!=='support') && (
+                  {shouldRenderDate && openChat.type !== "support" && (
                     <div className="flex items-center justify-center mb-[1px]">
                       <div className="flex-grow border-t border-primary-darkGray"></div>
                       <span className="px-[27px] text-sm font-semibold text-primary-darkGray">
@@ -193,24 +271,31 @@ export default function ChatComp({
                       >
                         {key.name}
                       </p>
-                      <div className={`flex min-w-[300px] relative gap-[7px] justify-between ${key.name==='You'?'flex-row':'flex-row-reverse'}`}>
-                        <ChatMenu/>
-                      <div
-                        className={`p-2.5 text-left w-fit rounded-[5px] mb-1 text-primary-darkGray ${
-                          key.name === "You"
-                            ? "bg-chat-Main2"
-                            : index % 2 === 0
-                            ? "bg-chat-Main1"
-                            : "bg-chat-Main3"
-                        } ${
-                          openChat.type === "support" ? "!bg-[#f8f8f8]" : ""
+                        <div className="flex flex-col gap-2">
+                        {key.reply&&<div className="p-2.5 bg-primary-iconBg text-left rounded-[5px] text-primary-darkGray text-sm">{key.reply}</div>}
+                        <div
+                        className={`flex min-w-[300px] relative gap-[7px] justify-between ${
+                          key.name === "You" ? "flex-row" : "flex-row-reverse"
                         }`}
                       >
-                        <p className="text-sm">{key.chat}</p>
-                        <p className="text-xs mr-auto w-fit mt-3">
-                          {hours}:{minutes}
-                        </p>
-                      </div>
+                      <ChatMenu user={key.name} reply={key.chat} />
+                        <div
+                          className={`p-2.5 text-left w-fit rounded-[5px] mb-1 text-primary-darkGray ${
+                            key.name === "You"
+                              ? "bg-chat-Main2"
+                              : index % 2 === 0
+                              ? "bg-chat-Main1"
+                              : "bg-chat-Main3"
+                          } ${
+                            openChat.type === "support" ? "!bg-[#f8f8f8]" : ""
+                          } ${key.reply?'!w-full':''}`}
+                        >
+                          <p className="text-sm">{key.chat}</p>
+                          <p className="text-xs mr-auto w-fit mt-3">
+                            {hours}:{minutes}
+                          </p>
+                        </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -230,12 +315,31 @@ export default function ChatComp({
             <p>Please wait while we connect you with one of our team</p>
           </div>
         )}
-        <div className="w-full flex gap-[13px] mt-[25px]">
+        <div className="w-full flex justify-between gap-[13px] mt-[25px] relative">
+          {replyText.active && (
+            <div className="absolute w-[603px] left-0 text-left bottom-[70%] z-0 rounded-[5px] bg-primary-iconBg border border-primary-gray">
+              <div className="w-full h-fit  relative px-[20px] py-[17px]">
+                <div
+                  onClick={() => {
+                    setReplyText({ active: false, reply: "", user: "" });
+                  }}
+                  className="cursor-pointer absolute top-[15px] right-4"
+                >
+                  <CloseGrayIcon size={12} />
+                </div>
+                <p className="font-semibold">Replying to {replyText.user}</p>
+                <p className="text-primary-darkGray text-sm">{replyText.reply}</p>
+              </div>
+            </div>
+          )}
           <input
+          value={inputText}
+            onChange={(e) => setInputText(e.currentTarget.value)}
             placeholder="Type a new message"
-            className="pl-[16px] py-[12.81px] flex w-full h-[40px] border-gray-400 border rounded-[5px]"
+            className="pl-[16px] py-[12.81px] flex w-[603px] h-[40px] border-primary-gray border rounded-[5px] z-20 bg-white"
           ></input>
           <button
+          onClick={()=>sendMessage()}
             type="button"
             className="w-[76px] h-[40px] bg-primary-blue rounded-[5px] px-4 py-2 font-semibold text-primary-white"
           >

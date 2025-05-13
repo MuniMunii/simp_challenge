@@ -26,7 +26,7 @@ function App() {
             <SearchIcon />
           </div>
         </div>
-      <div className="ml-auto border-l border-l-primary-gray h-[1022px] w-[1635px] relative text-[#333333]">
+      <div className="ml-auto border-l border-l-primary-gray h-[1022px] w-[1635px] relative text-[#333333] overflow-hidden">
           <AnimatePresence>
           {isActive && (
           <motion.div

@@ -2,7 +2,8 @@ interface HistoryProps {
   name: string | null;
   chat: string;
   date: string;
-  new?:boolean
+  new?:boolean;
+  reply?:string;
 }
 interface DummyTextProps {
   type: string;

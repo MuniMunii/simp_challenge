@@ -9,7 +9,7 @@ import {
   TimeActiveIcon,
   TimeIcon,
 } from "./icon";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type SetStateAction } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -40,7 +40,9 @@ export default function TaskComp({
   task,
   checked,
   label,
+  setDisableScroll
 }: {
+  setDisableScroll:React.Dispatch<SetStateAction<boolean>>
   toggleHide:()=>void;
   hideTask:boolean;
   index: number;
@@ -87,7 +89,7 @@ export default function TaskComp({
   const decreasingTime = endDateTask - startDate;
   const changeFormat = decreasingTime / (1000 * 3600 * 24);
   const TimeIsActive = endDate.trim() ? <TimeActiveIcon /> : <TimeIcon />;
-  const editIsActive = inputTask.trim() ? <PenActiveIcon /> : <PenIcon />;
+  const editIsActive = inputTask==="No Description"||inputTask==='' ? <PenIcon /> : <PenActiveIcon />;
   const bookmarkIsActive =
     (label ?? [])?.length >= 1 ? <BookmarkActiveIcon /> : <BookmarkIcon />;
   //   changing date format to string
@@ -117,6 +119,7 @@ export default function TaskComp({
         onClick={() => {
           updateTask({ label: [...(label || []), key] });
           setOpenBookmark(false);
+          setDisableScroll(false)
         }}
         className="h-[28px] w-full flex justify-start items-center px-[12px] py-2 text-primary-darkGray cursor-pointer rounded-[5px]"
         style={{ backgroundColor: key.color }}
@@ -135,7 +138,7 @@ export default function TaskComp({
   return ()=>window.removeEventListener('mousedown',handleOutsideClickDelete)
   },[buttonDeleteRef.current])
   return (
-    <div className="w-full h-fit border-b border-b-primary-gray py-[22px] first:pt-0 last:border-b-0   relative">
+    <div className="w-full h-fit border-b border-b-primary-gray py-[22px] first:pt-3 last:border-b-0   relative">
       <div className="flex justify-between min-h-5">
         <div className="flex justify-start items-start text-left gap-[22.5px]">
           <label className="flex items-center cursor-pointer relative mt-[3px]">
@@ -176,7 +179,8 @@ export default function TaskComp({
             }`}
           >
             <TextareaAutosize
-              value={inputTitle}
+              value={inputTitle==='Type Task Title'?'':inputTitle}
+              placeholder="Type Text Title"
               readOnly={checked}
               onFocus={() => {
                 if (checked) updateTask({ checked: false });
@@ -186,7 +190,9 @@ export default function TaskComp({
                 updateTask({ nameTask: inputTitle });
               }}
               onInput={(e) => setInputTitle(e.currentTarget.value)}
-              className={`h-fit resize-none w-[335px] ${
+              className={`h-fit resize-none w-[335px]
+                ${inputTitle==='Type Task Title'||inputTitle===''?'border border-primary-gray w-[380px] px-[14px] py-2.5 rounded-[5px] flex items-center':''}
+                 ${
                 checked
                   ? `text-primary-gray line-through ${
                       hideTask ? "" : "overflow-hidden"
@@ -242,6 +248,7 @@ export default function TaskComp({
                 <CalenderIcon />
               </div>
               <DatePicker
+              className="cursor-pointer"
                 locale={"custom"}
                 placeholderText="DD/MM/YY"
                 selected={endDateTaskState || endDateTask}
@@ -257,7 +264,7 @@ export default function TaskComp({
             <TextareaAutosize
             placeholder="No Description"
               ref={textAreaRef}
-              value={inputTask}
+              value={inputTask==='No Description'?'':inputTask}
               readOnly={checked}
               onFocus={() => {
                 if (checked) updateTask({ checked: false });
@@ -275,7 +282,7 @@ export default function TaskComp({
             className=" w-[619px] h-fit relative flex items-center pr-[9.45px] pb-[13px] pt-[7px] gap-[18px] mt-[15px]  bg-[#F9F9F9]"
           >
             <button
-              onClick={() => setOpenBookmark((prev) => !prev)}
+              onClick={() => {setOpenBookmark((prev) => !prev);setDisableScroll(true)}}
               className="cursor-pointer size-fit"
             >
               {bookmarkIsActive}

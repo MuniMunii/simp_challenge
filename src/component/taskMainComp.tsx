@@ -4,6 +4,7 @@ import { ArrowHeadDownIcon } from "./icon";
 import TaskComp from "./task";
 export default function TaskMainComp() {
   const [hideTask, setHideTask] = useState<boolean[]>([]);
+  const [disableScroll,setDisableScroll]=useState<boolean>(false)
   const [openDropDown, setOpenDropdown] = useState<{
     open: boolean;
     value: "My State" | "Personal Errands" | "Urgent To-Do";
@@ -57,6 +58,7 @@ export default function TaskMainComp() {
     setDummyTaskState((prev) => [task, ...prev]);
     setHideTask((prev) => [false, ...prev]);
   }
+  // debugging
   useEffect(() => {
     console.log(DummyTaskState);
   }, [DummyTaskState]);
@@ -83,12 +85,7 @@ export default function TaskMainComp() {
     getTask()
   },[])
     // Mock API POST Task
-    const firstRender=useRef(true)
   useEffect(()=>{
-    if(firstRender.current){
-      firstRender.current=false
-      return
-    }
     const fetchPostTask = async () => {
         const response = await fetch(
           "https://jsonplaceholder.typicode.com/posts",
@@ -109,7 +106,7 @@ export default function TaskMainComp() {
   },[DummyTaskState])
   return (
     <div className="w-[692px] h-[677px] ml-[29px] mb-[42px] mr-[13px] mt-[18px]">
-      <div className="w-full h-[40px]  pr-[10.1px] flex justify-between">
+      <div className="w-full h-[40px] pr-[10.1px] flex justify-between">
         <div className="w-[289px] h-full flex justify-center relative">
           <div
             onClick={() =>
@@ -154,12 +151,12 @@ export default function TaskMainComp() {
         <button
           type="button"
           onClick={() => addTask()}
-          className="w-[98.8px] h-full rounded-[5px] flex justify-center items-center font-semibold bg-primary-blue text-white "
+          className="w-[98.8px] cursor-pointer h-full rounded-[5px] flex justify-center items-center font-semibold bg-primary-blue text-white "
         >
           New Task
         </button>
       </div>
-      <div className="w-full h-[615px] mt-5 overflow-y-auto relative">
+      <div className={`w-full h-[615px] mt-5 ${disableScroll?'overflow-y-hidden':'overflow-y-auto'} relative`}>
         {DummyTaskState?.filter(task=>task.type===openDropDown.value).map((task, index) => {
           const updateTask = (updates: Partial<TaskProps>) => {
             setDummyTaskState((prev) =>
@@ -180,6 +177,7 @@ export default function TaskMainComp() {
           };
           return (
             <TaskComp
+            setDisableScroll={setDisableScroll}
               hideTask={hideTask[index] ?? false}
               toggleHide={()=>toggleHide()}
               label={task.label}
