@@ -40,8 +40,10 @@ export default function TaskComp({
   task,
   checked,
   label,
-  setDisableScroll
+  setDisableScroll,
+  setMethodFetch
 }: {
+  setMethodFetch:React.Dispatch<SetStateAction<MethodFetch>>
   setDisableScroll:React.Dispatch<SetStateAction<boolean>>
   toggleHide:()=>void;
   hideTask:boolean;
@@ -57,7 +59,7 @@ export default function TaskComp({
 }) {
   const [openBookmark, setOpenBookmark] = useState<boolean>(false);
   const [openDelete, setOpenDelete] = useState<boolean>(false);
-  const buttonDeleteRef=useRef<HTMLButtonElement|null>(null)
+  const buttonDeleteRef=useRef<HTMLParagraphElement|null>(null)
   //   pass as state first before saving into the parent state
   const [inputTitle, setInputTitle] = useState<string>(nameTask);
   const [inputTask, setInputTask] = useState<string>(task);
@@ -119,7 +121,8 @@ export default function TaskComp({
         onClick={() => {
           updateTask({ label: [...(label || []), key] });
           setOpenBookmark(false);
-          setDisableScroll(false)
+          setDisableScroll(false);
+          setMethodFetch('UPDATE')
         }}
         className="h-[28px] w-full flex justify-start items-center px-[12px] py-2 text-primary-darkGray cursor-pointer rounded-[5px]"
         style={{ backgroundColor: key.color }}
@@ -146,6 +149,7 @@ export default function TaskComp({
               type="checkbox"
               checked={checked}
               onChange={() => {
+                setMethodFetch('UPDATE')
                 updateTask({ checked: !checked });
                 // toggleHide();
               }}
@@ -187,6 +191,7 @@ export default function TaskComp({
                 setInputTitle(nameTask);
               }}
               onBlur={() => {
+                setMethodFetch('UPDATE')
                 updateTask({ nameTask: inputTitle });
               }}
               onInput={(e) => setInputTitle(e.currentTarget.value)}
@@ -232,9 +237,9 @@ export default function TaskComp({
               <ArrowHeadDownIcon />
             </p>
           )}
-          <button onClick={()=>setOpenDelete(prev=>!prev)} className="relative cursor-pointer size-fit">
+          <button onClick={()=>{setOpenDelete(prev=>!prev);}} className="relative cursor-pointer size-fit">
             <NavigationMenuChat />
-            {openDelete&&<button ref={buttonDeleteRef} onClick={()=>deleteTask()} className="cursor-pointer w-[126px] h-[43px] text-indicator-Red absolute top-4 right-0 border border-primary-gray rounded-[5px] text-left pl-[18.39px] z-30 bg-white">Delete</button>}
+            {openDelete&&<p ref={buttonDeleteRef} onClick={()=>{deleteTask();setMethodFetch('DELETE')}} className="cursor-pointer w-[126px] h-[43px] text-indicator-Red absolute top-4 right-0 border border-primary-gray rounded-[5px] text-left flex items-center pl-[18.39px] z-30 bg-white">Delete</p>}
           </button>
         </div>
       </div>
@@ -252,7 +257,7 @@ export default function TaskComp({
                 locale={"custom"}
                 placeholderText="DD/MM/YY"
                 selected={endDateTaskState || endDateTask}
-                onChange={(date) => setEndDateTaskState(date as Date)}
+                onChange={(date) => {setEndDateTaskState(date as Date);setMethodFetch('UPDATE')}}
                 dateFormat={"dd/MM/yy"}
               />
             </div>
@@ -271,6 +276,7 @@ export default function TaskComp({
                 setInputTask(task);
               }}
               onBlur={() => {
+                setMethodFetch('UPDATE')
                 updateTask({ task: inputTask });
               }}
               onInput={(e) => setInputTask(e.currentTarget.value)}

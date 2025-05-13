@@ -1,15 +1,20 @@
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState,useRef } from "react";
-import { ArrowHeadDownIcon } from "./icon";
+import { ArrowHeadDownIcon, LoadingIcon } from "./icon";
 import TaskComp from "./task";
 export default function TaskMainComp() {
   const [hideTask, setHideTask] = useState<boolean[]>([]);
+  const [methodFetch,setMethodFetch]=useState<MethodFetch>('POST')
   const [disableScroll,setDisableScroll]=useState<boolean>(false)
   const [openDropDown, setOpenDropdown] = useState<{
     open: boolean;
     value: "My State" | "Personal Errands" | "Urgent To-Do";
   }>({ open: false, value: "My State" });
+  const [loadingEffect,setLoadingEffect]=useState<boolean>(true)
+  // Loading Effect when changing type of task
+  useEffect(()=>{let Timer;Timer=setTimeout(()=>setLoadingEffect(false),1500);return()=>clearTimeout(Timer)},[openDropDown.value])
   const openDropdownRef=useRef<HTMLDivElement|null>(null)
+  const buttonDropdownRef=useRef<HTMLDivElement|null>(null)
   const [DummyTaskState, setDummyTaskState] = useState<TaskProps[]>([
     // {
     //   nameTask: "Close off Case #012920- RODRIGUES, Amiguel",
@@ -65,13 +70,15 @@ export default function TaskMainComp() {
   useEffect(()=>{console.log('Type: ',openDropDown.value)},[openDropDown.value])
   useEffect(()=>{
     const handleOutsideClickDelete=(event:MouseEvent)=>{
-      if( openDropdownRef.current &&!openDropdownRef.current.contains(event.target as Node)){
-        setOpenDropdown({open:false,value:openDropDown.value})
+      if( openDropdownRef.current && buttonDropdownRef.current &&!openDropdownRef.current.contains(event.target as Node)&&!buttonDropdownRef.current.contains(event.target as Node)){
+        setOpenDropdown((prev)=>({...prev,open:false}))
       }
     }
-  window.addEventListener('mousedown',handleOutsideClickDelete)
+   if (openDropDown.open) {
+    window.addEventListener("mousedown", handleOutsideClickDelete);
+  }
   return ()=>window.removeEventListener('mousedown',handleOutsideClickDelete)
-  },[openDropdownRef.current])
+  },[openDropDown.open])
   // Mock API Get Task
   useEffect(()=>{
     const getTask=async()=>{
@@ -90,7 +97,7 @@ export default function TaskMainComp() {
         const response = await fetch(
           "https://jsonplaceholder.typicode.com/posts",
           {
-            method: "post",
+            method: 'post',
             headers: {
               "Content-type": "application/json; charset=UTF-8",
             },
@@ -99,16 +106,17 @@ export default function TaskMainComp() {
         );
         const data = await response.json();
         if (response.ok) {
-          console.log("POST Task Success :", data);
+          console.log(`${methodFetch} Task Success :`, data);
         }
       };
     fetchPostTask()
-  },[DummyTaskState])
+  },[DummyTaskState,methodFetch])
   return (
     <div className="w-[692px] h-[677px] ml-[29px] mb-[42px] mr-[13px] mt-[18px]">
       <div className="w-full h-[40px] pr-[10.1px] flex justify-between">
         <div className="w-[289px] h-full flex justify-center relative">
           <div
+          ref={buttonDropdownRef}
             onClick={() =>
               setOpenDropdown((prev) => ({ ...prev, open: !prev.open }))
             }
@@ -130,18 +138,15 @@ export default function TaskMainComp() {
                   {options
                     .filter((option) => openDropDown.value !== option)
                     .map((key, index) => (
-                      <>
                         <button
                           onClick={() =>{
-                            setOpenDropdown({open:false,value:key})
-                          }
+                            setTimeout(() => {setOpenDropdown({ open: false, value: key });}, 0);}
                           }
                           key={index + "button"}
                           className="cursor-pointer w-full h-1/2 first:border-b first:border-b-primary-gray flex items-center justify-start px-[15px]"
                         >
                           {key}
                         </button>
-                      </>
                     ))}
                 </div>
               )}
@@ -150,14 +155,14 @@ export default function TaskMainComp() {
         </div>
         <button
           type="button"
-          onClick={() => addTask()}
+          onClick={() => {addTask();setMethodFetch('POST')}}
           className="w-[98.8px] cursor-pointer h-full rounded-[5px] flex justify-center items-center font-semibold bg-primary-blue text-white "
         >
           New Task
         </button>
       </div>
       <div className={`w-full h-[615px] mt-5 ${disableScroll?'overflow-y-hidden':'overflow-y-auto'} relative`}>
-        {DummyTaskState?.filter(task=>task.type===openDropDown.value).map((task, index) => {
+        {loadingEffect?<div className="w-full h-[615px] flex flex-col justify-center items-center"><LoadingIcon/><p>Loading Task List</p></div>:DummyTaskState?.filter(task=>task.type===openDropDown.value).map((task, index) => {
           const updateTask = (updates: Partial<TaskProps>) => {
             setDummyTaskState((prev) =>
               prev.map((task, i) =>
@@ -177,7 +182,8 @@ export default function TaskMainComp() {
           };
           return (
             <TaskComp
-            setDisableScroll={setDisableScroll}
+            setMethodFetch={setMethodFetch}
+              setDisableScroll={setDisableScroll}
               hideTask={hideTask[index] ?? false}
               toggleHide={()=>toggleHide()}
               label={task.label}
